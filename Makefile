@@ -1,6 +1,6 @@
 run:
-	go build .
-	./tsuki-go
+	go build -o bin/tsuki -v .
+	./bin/tsuki
 
 git:
 	git add .
