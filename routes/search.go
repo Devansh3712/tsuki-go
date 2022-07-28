@@ -34,8 +34,8 @@ func SearchUser(c *gin.Context) {
 			session.Save()
 		}
 		keyword := session.Get("search").(string)
-
-		searchResult := database.ReadUsers(keyword, searchLimit)
+		searchLimit = 10
+		searchResult := database.ReadUsers(keyword, 10, 0)
 		var users []search
 		for _, result := range searchResult {
 			user := search{
@@ -55,13 +55,13 @@ func SearchUser(c *gin.Context) {
 	}
 }
 
+// Return users for loading through AJAX
 func LoadMoreUsers(c *gin.Context) {
 	session := sessions.Default(c)
 	id := session.Get("userId")
 	keyword := session.Get("search").(string)
+	searchResult := database.ReadUsers(keyword, 10, searchLimit)
 	searchLimit += 10
-
-	searchResult := database.ReadUsers(keyword, searchLimit)
 	var users []search
 	for _, result := range searchResult {
 		user := search{
@@ -75,9 +75,7 @@ func LoadMoreUsers(c *gin.Context) {
 		}
 		users = append(users, user)
 	}
-	c.HTML(http.StatusOK, "search.tmpl.html", gin.H{
-		"users": users,
-	})
+	c.JSON(http.StatusOK, users)
 }
 
 func ToggleSearchFollow(c *gin.Context) {

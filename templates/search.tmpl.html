@@ -17,39 +17,43 @@
     required
   />
 </form>
-{{ if .users }} {{ range .users }}
-<form
-  name="follow"
-  action="/search/{{ .Username }}/toggle-follow"
-  method="POST"
-  enctype="multipart/form-data"
->
-  <span class="avatar-small">
-    {{ if .Avatar }}
-    <img src="{{ .Avatar }}" />
-    {{ else }}
-    <img src="/static/images/avatar.jpg" />
+{{ if .users }}
+<div id="users">
+  {{ range .users }}
+  <form
+    name="follow"
+    action="/search/{{ .Username }}/toggle-follow"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+    <span class="avatar-small">
+      {{ if .Avatar }}
+      <img src="{{ .Avatar }}" />
+      {{ else }}
+      <img src="/static/images/avatar.jpg" />
+      {{ end }}
+    </span>
+    <a href="/user/{{ .Username }}">
+      <h3 style="display: inline-block">@{{ .Username }}</h3>
+    </a>
+    &nbsp; {{ if eq .Follows true }}
+    <button type="submit">Unfollow</button>
+    {{ else if eq .Follows false }}
+    <button type="submit">Follow</button>
     {{ end }}
-  </span>
-  <a href="/user/{{ .Username }}">
-    <h3 style="display: inline-block">@{{ .Username }}</h3>
-  </a>
-  &nbsp; {{ if eq .Follows true }}
-  <button type="submit">Unfollow</button>
-  {{ else if eq .Follows false }}
-  <button type="submit">Follow</button>
+  </form>
+  <p class="separator">
+    {{ .Posts }} posts &nbsp; {{ .Followers }} followers &nbsp; {{ .Following }}
+    following
+  </p>
   {{ end }}
-</form>
-<p class="separator">
-  {{ .Posts }} posts &nbsp; {{ .Followers }} followers &nbsp; {{ .Following }}
-  following
-</p>
-{{ end }}
+</div>
+{{ if eq (len .users) 10 }}
 <h3 style="padding-top: 10px">
-  <a href="/search/more">
+  <a onclick="loadMoreUsers()">
     <i class="fa-solid fa-circle-chevron-down"></i> More
   </a>
 </h3>
-{{ else }}
+{{ end }} {{ else }}
 <p style="color: rgb(130, 130, 130)">No users found.</p>
 {{ end }} {{ template "bottom" . }}

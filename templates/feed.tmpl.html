@@ -1,27 +1,31 @@
 {{ template "top" . }}
 <h2>User Feed</h2>
 <br />
-{{ if .posts }} {{ range .posts }}
-<span class="avatar-small">
-  {{ if .Avatar }}
-  <img src="{{ .Avatar }}" />
-  {{ else }}
-  <img src="/static/images/avatar.jpg" />
+{{ if .posts }}
+<div id="posts">
+  {{ range .posts }}
+  <span class="avatar-small">
+    {{ if .Avatar }}
+    <img src="{{ .Avatar }}" />
+    {{ else }}
+    <img src="/static/images/avatar.jpg" />
+    {{ end }}
+  </span>
+  <h3 style="display: inline-block">
+    <a href="/user/{{ .Username }}">@{{ .Username }}</a>
+  </h3>
+  <a href="/post/{{ .Id }}">
+    <p>{{ .Body }}</p>
+    <p class="separator">{{ .CreatedAt }}</p>
+  </a>
   {{ end }}
-</span>
-<h3 style="display: inline-block">
-  <a href="/user/{{ .Username }}">@{{ .Username }}</a>
-</h3>
-<a href="/post/{{ .Id }}">
-  <p>{{ .Body }}</p>
-  <p class="separator">{{ .CreatedAt }}</p>
-</a>
-{{ end }}
+</div>
+{{ if eq (len .posts) 10 }}
 <h3 style="padding-top: 10px">
-  <a href="/feed?more=True">
+  <a onclick="loadMoreFeed()">
     <i class="fa-solid fa-circle-chevron-down"></i> More
   </a>
 </h3>
-{{ else }}
+{{ end }} {{ else }}
 <p style="color: rgb(130, 130, 130)">No posts found.</p>
 {{ end }} {{ template "bottom" . }}

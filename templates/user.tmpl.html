@@ -88,6 +88,12 @@
       <p class="content">{{ .Body }}</p>
       <p class="separator">{{ .CreatedAt }}</p>
     </a>
+    {{ end }} {{ if gt .postCount 5 }}
+    <h3 style="padding-top: 10px">
+      <a href="/user/{{ .user.Username }}/posts">
+        <i class="fa-solid fa-circle-chevron-down"></i> More
+      </a>
+    </h3>
     {{ end }} {{ else }}
     <p style="color: rgb(130, 130, 130)">No posts found.</p>
     {{ end }}

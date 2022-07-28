@@ -1,0 +1,20 @@
+{{ template "top" . }}
+<h2>{{ .user.Username | formatAsTitle }}'s Posts</h2>
+<br />
+{{ if .posts }}
+<div id="posts">
+  {{ range .posts }}
+  <a href="/post/{{ .Id }}">
+    <p class="content">{{ .Body }}</p>
+    <p class="separator">{{ .CreatedAt }}</p>
+  </a>
+  {{ end }}
+</div>
+<h3 style="padding-top: 10px">
+  <a onclick="loadMorePosts('{{ .user.Username }}')">
+    <i class="fa-solid fa-circle-chevron-down"></i> More
+  </a>
+</h3>
+{{ else }}
+<p style="color: rgb(130, 130, 130)">No posts found.</p>
+{{ end }} {{ template "bottom" . }}

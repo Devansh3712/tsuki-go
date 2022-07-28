@@ -33,7 +33,7 @@ func GetUser(c *gin.Context) {
 		"postCount": database.ReadPostsCount(userId),
 		"followers": database.ReadFollowers(userId),
 		"following": database.ReadFollowing(userId),
-		"posts":     database.ReadPosts(userId, postLimit),
+		"posts":     database.ReadPosts(userId, 5, 0),
 	})
 }
 
@@ -60,7 +60,7 @@ func GetUserByName(c *gin.Context) {
 	followers := database.ReadFollowers(user.Id)
 	following := database.ReadFollowing(user.Id)
 	postCount := database.ReadPostsCount(user.Id)
-	posts := database.ReadPosts(user.Id, postLimit)
+	posts := database.ReadPosts(user.Id, 5, 0)
 
 	if id != nil {
 		c.HTML(http.StatusOK, "user.tmpl.html", gin.H{
@@ -80,6 +80,33 @@ func GetUserByName(c *gin.Context) {
 		"following": following,
 		"posts":     posts,
 	})
+}
+
+func GetUserPosts(c *gin.Context) {
+	username := c.Param("username")
+	user := database.ReadUserByName(username)
+	if user == nil {
+		c.HTML(http.StatusNotFound, "error.tmpl.html", gin.H{
+			"error":   "404 Not Found",
+			"message": "User not found",
+		})
+		return
+	}
+	postLimit = 10
+	posts := database.ReadPosts(user.Id, 10, 0)
+	c.HTML(http.StatusOK, "userPosts.tmpl.html", gin.H{
+		"user":  user,
+		"posts": posts,
+	})
+}
+
+// Return posts for loading through AJAX
+func LoadMorePosts(c *gin.Context) {
+	username := c.Param("username")
+	user := database.ReadUserByName(username)
+	posts := database.ReadPosts(user.Id, 10, postLimit)
+	postLimit += 10
+	c.JSON(http.StatusOK, posts)
 }
 
 func UpdateAvatar(c *gin.Context) {

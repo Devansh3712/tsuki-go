@@ -49,6 +49,7 @@ func main() {
 	app.GET("/login", routes.Login)
 	app.GET("/logout", routes.Logout)
 	app.GET("/feed", middleware.AuthMiddleware(), routes.UserFeed)
+	app.GET("/feed/more", middleware.AuthMiddleware(), routes.LoadMoreFeed)
 
 	auth := app.Group("/auth")
 	{
@@ -61,6 +62,8 @@ func main() {
 
 	user := app.Group("/user")
 	user.GET("/:username", routes.GetUserByName)
+	user.GET("/:username/posts", routes.GetUserPosts)
+	user.GET("/:username/posts/more", routes.LoadMorePosts)
 	user.Use(middleware.AuthMiddleware())
 	{
 		user.GET("/", routes.GetUser)
@@ -80,6 +83,7 @@ func main() {
 	{
 		search.GET("/", routes.SearchUser)
 		search.GET("/more", routes.LoadMoreUsers)
+
 		search.POST("/", routes.SearchUser)
 		search.POST("/:username/toggle-follow", middleware.AuthMiddleware(), routes.ToggleSearchFollow)
 	}
@@ -91,6 +95,7 @@ func main() {
 		post.GET("/", routes.NewPost)
 		post.GET("/:id/toggle-vote", routes.ToggleVote)
 		post.GET("/:id/delete", routes.DeletePost)
+		post.GET("/:id/comments", routes.LoadMoreComments)
 		post.GET("/:id/comment/delete", routes.DeleteComment)
 
 		post.POST("/", routes.NewPost)

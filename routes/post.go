@@ -69,12 +69,8 @@ func GetPost(c *gin.Context) {
 		})
 		return
 	}
-	if c.Query("more") == "true" {
-		commentLimit += 10
-	} else {
-		commentLimit = 10
-	}
-	comments := database.ReadComments(post.Id, commentLimit)
+	commentLimit = 10
+	comments := database.ReadComments(post.Id, 10, 0)
 	for index := range comments {
 		comments[index].Username = database.ReadUserById(comments[index].UserId).Username
 		// Enable delete comment if its current user's comment
@@ -98,6 +94,23 @@ func GetPost(c *gin.Context) {
 		"voters":   database.ReadVotes(post.Id),
 		"comments": comments,
 	})
+}
+
+// Return comments for loading through AJAX
+func LoadMoreComments(c *gin.Context) {
+	session := sessions.Default(c)
+	id := session.Get("userId")
+	postId := c.Param("id")
+	comments := database.ReadComments(postId, 10, commentLimit)
+	commentLimit += 10
+	for index := range comments {
+		comments[index].Username = database.ReadUserById(comments[index].UserId).Username
+		// Enable delete comment if its current user's comment
+		if id != nil && id.(string) == comments[index].UserId {
+			comments[index].Self = true
+		}
+	}
+	c.JSON(http.StatusOK, comments)
 }
 
 func DeletePost(c *gin.Context) {

@@ -75,20 +75,25 @@
   </button>
 </form>
 <br />
-{{ if .comments }} {{ $postId := .post.Id }} {{ range .comments }}
-<p>{{ .Body }}</p>
-<p class="separator">
-  <a href="/user/{{ .Username }}">@{{ .Username }}</a> &nbsp;{{ if .Self }}
-  <a href="/post/{{ $postId }}/comment/delete?commentId={{ .Id }}">
-    <i class="fa-regular fa-trash-can"></i> Delete
-  </a>
-  {{ end }} {{ end }}
-</p>
+{{ if .comments }} {{ $postId := .post.Id }}
+<div id="comments">
+  {{ range .comments }}
+  <p>{{ .Body }}</p>
+  <p class="separator">
+    <a href="/user/{{ .Username }}">@{{ .Username }}</a> &nbsp;{{ if .Self }}
+    <a href="/post/{{ $postId }}/comment/delete?commentId={{ .Id }}">
+      <i class="fa-regular fa-trash-can"></i> Delete
+    </a>
+    {{ end }}
+  </p>
+  {{ end }}
+</div>
+{{ if eq (len .comments) 10 }}
 <h3 style="padding-top: 10px">
-  <a href="/post/{{ .post.Id }}?more=True">
+  <a onclick="loadMoreComments('{{ .post.Id }}')">
     <i class="fa-solid fa-circle-chevron-down"></i> More
   </a>
 </h3>
-{{ else }}
+{{ end }} {{ else }}
 <p style="color: rgb(130, 130, 130)">No comments found.</p>
 {{ end }} {{ template "bottom" . }}

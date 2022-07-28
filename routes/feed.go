@@ -20,12 +20,8 @@ func UserFeed(c *gin.Context) {
 		})
 		return
 	}
-	if c.Query("more") == "true" {
-		feedLimit += 10
-	} else {
-		feedLimit = 10
-	}
-	posts := database.ReadFeedPosts(id.(string), feedLimit)
+	feedLimit = 10
+	posts := database.ReadFeedPosts(id.(string), 10, 0)
 	for index := range posts {
 		author := database.ReadUserById(posts[index].UserId)
 		posts[index].Username = author.Username
@@ -34,4 +30,18 @@ func UserFeed(c *gin.Context) {
 	c.HTML(http.StatusOK, "feed.tmpl.html", gin.H{
 		"posts": posts,
 	})
+}
+
+// Return feed posts for loading through AJAX
+func LoadMoreFeed(c *gin.Context) {
+	session := sessions.Default(c)
+	id := session.Get("userId")
+	posts := database.ReadFeedPosts(id.(string), 10, feedLimit)
+	feedLimit += 10
+	for index := range posts {
+		author := database.ReadUserById(posts[index].UserId)
+		posts[index].Username = author.Username
+		posts[index].Avatar = author.Avatar
+	}
+	c.JSON(http.StatusOK, posts)
 }

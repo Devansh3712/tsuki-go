@@ -38,11 +38,12 @@ func ReadPostsCount(userId string) int {
 	return count
 }
 
-func ReadPosts(userId string, limit int) []models.Post {
+func ReadPosts(userId string, limit int, offset int) []models.Post {
 	var posts []models.Post
 	rows, err := db.Query(
-		`SELECT * FROM posts WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2`,
-		userId, limit,
+		`SELECT * FROM posts WHERE user_id = $1 ORDER BY created_at DESC
+		LIMIT $2 OFFSET $3`,
+		userId, limit, offset,
 	)
 	if err != nil {
 		log.Println(err)
@@ -58,19 +59,19 @@ func ReadPosts(userId string, limit int) []models.Post {
 	return posts
 }
 
-func ReadFeedPosts(userId string, limit int) []models.Post {
+func ReadFeedPosts(userId string, limit int, offset int) []models.Post {
 	var posts []models.Post
 	rows, err := db.Query(
 		`SELECT * FROM posts WHERE user_id IN
 		(SELECT follow_id FROM follows WHERE user_id = $1)
-		ORDER BY created_at DESC LIMIT $2`,
-		userId, limit,
+		ORDER BY created_at DESC
+		LIMIT $2 OFFSET $3`,
+		userId, limit, offset,
 	)
 	if err != nil {
 		log.Println(err)
 		return nil
 	}
-
 	defer rows.Close()
 	for rows.Next() {
 		var post models.Post
@@ -129,7 +130,6 @@ func ReadVotes(id string) []string {
 		log.Println(err)
 		return nil
 	}
-
 	defer rows.Close()
 	for rows.Next() {
 		var username string
@@ -166,14 +166,18 @@ func ReadComment(id string) *models.Comment {
 	return &comment
 }
 
-func ReadComments(postId string, limit int) []models.Comment {
+func ReadComments(postId string, limit int, offset int) []models.Comment {
 	var comments []models.Comment
-	rows, err := db.Query(`SELECT * FROM comments WHERE post_id = $1 LIMIT $2`, postId, limit)
+	rows, err := db.Query(
+		`SELECT * FROM comments WHERE post_id = $1
+		ORDER BY created_at DESC
+		LIMIT $2 OFFSET $3`,
+		postId, limit, offset,
+	)
 	if err != nil {
 		log.Println(err)
 		return nil
 	}
-
 	defer rows.Close()
 	for rows.Next() {
 		var comment models.Comment

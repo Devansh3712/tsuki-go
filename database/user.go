@@ -60,11 +60,12 @@ func ReadUserById(id string) *models.User {
 	return &user
 }
 
-func ReadUsers(username string, limit int) []models.User {
+func ReadUsers(username string, limit int, offset int) []models.User {
 	var users []models.User
 	rows, err := db.Query(
-		`SELECT * FROM t_users WHERE username LIKE $1 ORDER BY username LIMIT $2`,
-		"%"+username+"%", limit)
+		`SELECT * FROM t_users WHERE username LIKE $1 ORDER BY username
+		LIMIT $2 OFFSET $3`,
+		"%"+username+"%", limit, offset)
 	if err != nil {
 		log.Println(err)
 		return nil
