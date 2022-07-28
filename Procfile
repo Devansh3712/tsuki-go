@@ -1,1 +1,1 @@
-web: bin/tsuki
+web: bin/tsuki-go
