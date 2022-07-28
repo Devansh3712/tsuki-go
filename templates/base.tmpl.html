@@ -1,0 +1,57 @@
+{{ define "top" }}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/static/images/tsuki.ico" rel="icon" type="image/x-icon" />
+    <link href="/static/styles.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="/static/main.js" defer></script>
+    <title>Tsuki</title>
+  </head>
+  <body>
+    <div class="sidebar">
+      <a href="/">/HOME</a>
+      <a href="/signup">/SIGNUP</a>
+      <a href="/login">/LOGIN</a>
+      <a href="/feed">/FEED</a>
+      <a href="/post">/POST</a>
+      <a href="/search">/SEARCH</a>
+      <a href="/user">/USER</a>
+      <a href="/logout">/LOGOUT</a>
+      <img
+        src="/static/images/icon.png"
+        height="40"
+        width="40"
+        style="
+          position: fixed;
+          bottom: 0px;
+          padding-bottom: 30px;
+          padding-left: 20px;
+        "
+      />
+      <a href="https://github.com/Devansh3712/tsuki" target="_blank">
+        <span
+          style="
+            position: fixed;
+            bottom: 0px;
+            padding-bottom: 26px;
+            padding-left: 55px;
+            font-size: 38px;
+          "
+          ><i class="fa-brands fa-github"></i
+        ></span>
+      </a>
+    </div>
+    <div class="main">
+      <h1 style="padding-top: 10px">Tsuki</h1>
+      {{ end }} {{ define "bottom" }}
+    </div>
+  </body>
+</html>
+{{ end }}

@@ -1,0 +1,96 @@
+{{ template "top" . }}
+<div class="row">
+  <div class="column">
+    <h2>User Information</h2>
+    <br />
+    {{ if .user.Email }}
+    <p class="user-data"><b>Email:</b> {{ .user.Email }}</p>
+    {{ end }}
+    <p class="user-data"><b>Username:</b> {{ .user.Username }}</p>
+    <p class="user-data"><b>Verified:</b> {{ .user.Verified }}</p>
+    <p class="user-data"><b>Posts:</b> {{ .postCount }}</p>
+    <p class="user-data">
+      <b>Followers:</b> <a href="#" id="btn-1">{{ len .followers }}</a>
+    </p>
+    <div id="modal-1" class="modal">
+      <div class="modal-content">
+        <span class="close-1">&times;</span>
+        <h3>Followers</h3>
+        {{ range .followers }}
+        <p class="modal-data">
+          <a href="/user/{{ . }}">@{{ . }}</a>
+        </p>
+        {{ end }}
+      </div>
+    </div>
+    <p class="user-data">
+      <b>Following:</b> <a href="#" id="btn-2">{{ len .following }}</a>
+    </p>
+    <div id="modal-2" class="modal">
+      <div class="modal-content">
+        <span class="close-2">&times;</span>
+        <h3>Following</h3>
+        {{ range .following }}
+        <p class="modal-data">
+          <a href="/user/{{ . }}">@{{ . }}</a>
+        </p>
+        {{ end }}
+      </div>
+    </div>
+    <p class="user-data">
+      <b>Created At:</b> {{ .user.CreatedAt | formatAsDate }}
+    </p>
+    <span class="avatar">
+      {{ if .user.Avatar }}
+      <img src="{{ .user.Avatar }}" />
+      {{ else }}
+      <img src="/static/images/avatar.jpg" />
+      {{ end }}
+    </span>
+    {{ if not .settings }}
+    <br />
+    <form
+      name="follow"
+      action="/user/{{ .user.Username }}/toggle-follow/"
+      method="POST"
+      style="margin-top: 40px"
+      enctype="multipart/form-data"
+    >
+      {{ if eq .follows true }}
+      <button type="submit">Unfollow</button>
+      {{ else if eq .follows false }}
+      <button type="submit">Follow</button>
+      {{ end }}
+    </form>
+    {{ end }} {{ if .settings }}
+    <br />
+    <h2 style="margin-top: 60px">Settings</h2>
+    {{ if eq .user.Verified false }}
+    <p>➜ <a href="/auth/verify">Verify account</a></p>
+    {{ end }}
+    <p class="user-data">➜ <a href="/user/settings/avatar">Update avatar</a></p>
+    <p class="user-data">
+      ➜ <a href="/user/settings/username">Update username</a>
+    </p>
+    <p class="user-data">
+      ➜ <a href="/user/settings/password">Update password</a>
+    </p>
+    <p class="user-data">
+      ➜ <a href="/user/settings/delete">Delete account</a>
+    </p>
+    {{ end }}
+  </div>
+  <div class="column">
+    <h2>Recent Posts</h2>
+    <br />
+    {{ if .posts }} {{ range .posts }}
+    <a href="/post/{{ .Id }}">
+      <p class="content">{{ .Body }}</p>
+      <p class="separator">{{ .CreatedAt }}</p>
+    </a>
+    {{ end }} {{ else }}
+    <p style="color: rgb(130, 130, 130)">No posts found.</p>
+    {{ end }}
+  </div>
+</div>
+{{ template "bottom" . }}

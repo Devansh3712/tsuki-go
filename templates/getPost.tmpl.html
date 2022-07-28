@@ -1,0 +1,94 @@
+{{ template "top" . }}
+<br />
+<span class="avatar-small">
+  {{ if .author.Avatar }}
+  <img src="{{ .author.Avatar }}" />
+  {{ else }}
+  <img src="/static/images/avatar.jpg" />
+  {{ end }}
+</span>
+<u>
+  <h3 style="margin-bottom: 30px">
+    <a href="/user/{{ .author.Username }}">@{{ .author.Username }}</a>
+  </h3>
+</u>
+<p class="content">{{ .post.Body }}</p>
+<h4>{{ .post.CreatedAt }}</h4>
+<p class="post-settings">
+  <a href="#" id="btn-1">{{ len .voters }} Likes</a>
+  &nbsp; {{ len .comments }} Comments
+</p>
+<div id="modal-1" class="modal">
+  <div class="modal-content">
+    <span class="close-1">&times;</span>
+    <h3>Liked By</h3>
+    {{ range .voters }}
+    <p class="modal-data">
+      <a href="/user/{{ . }}">@{{ . }}</a>
+    </p>
+    {{ end }}
+  </div>
+</div>
+<a href="/post/{{ .post.Id }}/toggle-vote">
+  {{ if .voted }}
+  <i class="fa-solid fa-heart"></i>
+  {{ else }}
+  <i class="fa-regular fa-heart"></i>
+  {{ end }} Like
+</a>
+{{ if .self }} &nbsp;
+<a href="/post/{{ .post.Id }}/delete">
+  <i class="fa-regular fa-trash-can"></i> Delete
+</a>
+{{ end }}
+<br />
+<h2 style="padding-top: 10px">Comments</h2>
+<form
+  name="body"
+  action="/post/{{ .post.Id }}/comment"
+  method="POST"
+  enctype="multipart/form-data"
+>
+  <textarea
+    name="body"
+    style="
+      background-color: rgb(15, 15, 15);
+      color: white;
+      font-family: inherit;
+      font-size: 16px;
+      resize: none;
+      height: 50px;
+      width: 500px;
+      outline: none;
+      display: inline-block;
+      vertical-align: top;
+      box-sizing: border-box;
+      border: 2px solid rgb(130, 130, 130);
+      border-radius: 15px;
+      padding: 10px;
+    "
+    maxlength="320"
+    required
+  ></textarea>
+  <button type="submit" style="margin-top: 10px; margin-left: 10px">
+    Submit
+  </button>
+</form>
+<br />
+{{ if .comments }} {{ $postId := .post.Id }} {{ range .comments }}
+<p>{{ .Body }}</p>
+<p class="separator">
+  <a href="/user/{{ .Username }}">@{{ .Username }}</a> &nbsp;{{ if .Self }}
+  <a href="/post/{{ $postId }}/comment/delete?commentId={{ .Id }}">
+    <i class="fa-regular fa-trash-can"></i> Delete
+  </a>
+  {{ end }} {{ end }}
+</p>
+<h3 style="padding-top: 10px">
+  <a href="/post/{{ .post.Id }}?more=True">
+    <i class="fa-solid fa-circle-chevron-down"></i> More
+  </a>
+</h3>
+{{ else }}
+<p style="color: rgb(130, 130, 130)">No comments found.</p>
+{{ end }} {{ template "bottom" . }}

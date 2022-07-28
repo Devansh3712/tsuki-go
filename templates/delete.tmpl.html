@@ -1,0 +1,29 @@
+{{ template "top" . }}
+<h2>Delete Account</h2>
+<p>
+  Permanently delete your Tsuki account. On deleting your account, all related
+  data will be lost.
+</p>
+<form
+  name="delete"
+  action="/user/settings/delete"
+  method="POST"
+  enctype="multipart/form-data"
+>
+  <label for="password">Password</label>
+  <br />
+  <input
+    name="password"
+    id="password"
+    type="password"
+    maxlength="32"
+    required
+  /><i
+    class="fa-solid fa-eye"
+    style="margin-left: 10px; cursor: pointer"
+    id="togglePassword"
+  ></i>
+  <br />
+  <button type="submit">Delete account</button>
+</form>
+{{ template "bottom" . }}

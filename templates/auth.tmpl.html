@@ -1,0 +1,48 @@
+{{ template "top" . }} {{ if eq .type "signup" }}
+<h2>Sign Up</h2>
+<p>Sign up for a Tsuki account.</p>
+{{ else if eq .type "login" }}
+<h2>Login</h2>
+<p>Login to your Tsuki account.</p>
+{{ end }}
+<form
+  name="{{ .type }}"
+  action="/auth/{{ .type }}"
+  method="POST"
+  enctype="multipart/form-data"
+>
+  {{ if eq .type "signup" }}
+  <label for="email">Email</label>
+  <br />
+  <input name="email" type="email" required />
+  <br />
+  {{ end }}
+  <label for="username">Username</label>
+  <br />
+  <input
+    name="username"
+    type="text"
+    maxlength="32"
+    pattern="^[A-Za-z0-9._\\s]{1,32}$"
+    title="Username can only contain alphabets, digits, periods (.) and underscores (_)"
+    required
+  />
+  <br />
+  <label for="password">Password</label>
+  <br />
+  <input
+    name="password"
+    id="password"
+    type="password"
+    maxlength="32"
+    required
+  /><i
+    class="fa-solid fa-eye"
+    style="margin-left: 10px; cursor: pointer"
+    id="togglePassword"
+  ></i>
+  <br />
+  <br />
+  <button type="submit">{{ .type | formatAsTitle }}</button>
+</form>
+{{ template "bottom" . }}

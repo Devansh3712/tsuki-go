@@ -1,0 +1,40 @@
+{{ template "top" . }}
+<h2>Update {{ .type | formatAsTitle }}</h2>
+<p>Update your Tsuki account {{ .type }}.</p>
+<form
+  name="update"
+  action="/user/settings/{{ .type }}"
+  method="POST"
+  enctype="multipart/form-data"
+>
+  <label for="{{ .type }}">{{ .type | formatAsTitle }}</label>
+  <br />
+  {{ if eq .type "username" }}
+  <input
+    name="username"
+    type="text"
+    maxlength="32"
+    pattern="^[A-Za-z0-9._\\s]{1,32}$"
+    title="Username can only contain alphabets, digits, periods (.) and underscores (_)"
+    required
+  />
+  {{ else if eq .type "password" }}
+  <input
+    name="password"
+    id="password"
+    type="password"
+    maxlength="32"
+    required
+  /><i
+    class="fa-solid fa-eye"
+    style="margin-left: 10px; cursor: pointer"
+    id="togglePassword"
+  ></i>
+  <br />
+  {{ else }}
+  <input name="avatar" type="file" accept="image/*" required />
+  {{ end }}
+  <br />
+  <button type="submit">Submit</button>
+</form>
+{{ template "bottom" . }}
