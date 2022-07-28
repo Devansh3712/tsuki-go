@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Devansh3712/tsuki/models"
+	"github.com/Devansh3712/tsuki-go/models"
 	"github.com/lib/pq"
 )
 

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Devansh3712/tsuki/internal"
-	"github.com/Devansh3712/tsuki/middleware"
-	"github.com/Devansh3712/tsuki/routes"
+	"github.com/Devansh3712/tsuki-go/internal"
+	"github.com/Devansh3712/tsuki-go/middleware"
+	"github.com/Devansh3712/tsuki-go/routes"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
@@ -52,7 +52,7 @@ func main() {
 
 	auth := app.Group("/auth")
 	{
-		auth.GET("/verify", routes.SendVerificationMail)
+		auth.GET("/verify", middleware.AuthMiddleware(), routes.SendVerificationMail)
 		auth.GET("/verify/:id", routes.Verify)
 
 		auth.POST("/signup", routes.SignUp)

@@ -3,7 +3,7 @@ package routes
 import (
 	"net/http"
 
-	"github.com/Devansh3712/tsuki/database"
+	"github.com/Devansh3712/tsuki-go/database"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )

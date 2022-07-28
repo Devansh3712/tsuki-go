@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Devansh3712/tsuki/database"
-	"github.com/Devansh3712/tsuki/models"
+	"github.com/Devansh3712/tsuki-go/database"
+	"github.com/Devansh3712/tsuki-go/models"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -75,20 +75,19 @@ func GetPost(c *gin.Context) {
 		commentLimit = 10
 	}
 	comments := database.ReadComments(post.Id, commentLimit)
+	for index := range comments {
+		comments[index].Username = database.ReadUserById(comments[index].UserId).Username
+		// Enable delete comment if its current user's comment
+		if id != nil && id.(string) == comments[index].UserId {
+			comments[index].Self = true
+		}
+	}
 	if id != nil {
 		// Check if current user has voted on post
 		voted = database.Voted(id.(string), post.Id)
 		// Enable delete post if its current user's post
 		if id.(string) == post.UserId {
 			self = true
-		}
-		for index := range comments {
-			comments[index].Username = database.ReadUserById(comments[index].UserId).Username
-			// Enable delete comment if its current user's comment
-			if id.(string) == comments[index].UserId {
-				comments[index].Self = true
-				break
-			}
 		}
 	}
 	c.HTML(http.StatusOK, "getPost.tmpl.html", gin.H{

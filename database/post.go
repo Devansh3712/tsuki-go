@@ -3,7 +3,7 @@ package database
 import (
 	"log"
 
-	"github.com/Devansh3712/tsuki/models"
+	"github.com/Devansh3712/tsuki-go/models"
 )
 
 func CreatePost(userId string, post *models.Post) bool {

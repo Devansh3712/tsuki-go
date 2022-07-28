@@ -75,7 +75,6 @@ func AuthMiddleware() func(c *gin.Context) {
 			c.Abort()
 			return
 		}
-		session.Delete("Authorization")
 		session.Set("userId", parsedToken.UserId)
 		session.Save()
 		c.Next()

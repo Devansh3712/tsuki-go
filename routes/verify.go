@@ -9,8 +9,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/Devansh3712/tsuki/database"
-	"github.com/Devansh3712/tsuki/middleware"
+	"github.com/Devansh3712/tsuki-go/database"
+	"github.com/Devansh3712/tsuki-go/middleware"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"

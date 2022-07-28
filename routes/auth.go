@@ -5,9 +5,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/Devansh3712/tsuki/database"
-	"github.com/Devansh3712/tsuki/middleware"
-	"github.com/Devansh3712/tsuki/models"
+	"github.com/Devansh3712/tsuki-go/database"
+	"github.com/Devansh3712/tsuki-go/middleware"
+	"github.com/Devansh3712/tsuki-go/models"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
