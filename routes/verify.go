@@ -42,7 +42,7 @@ func createVerificationToken(id string) (string, error) {
 	claims := middleware.JWTClaims{
 		UserId: id,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 2).Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * 48).Unix(),
 			IssuedAt:  time.Now().Unix(),
 			Issuer:    issuer,
 		},

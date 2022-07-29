@@ -15,7 +15,7 @@ func RecoveryMiddleware() func(c *gin.Context) {
 					"message": "An unexpected error occured, try again later.",
 				})
 			}
+			c.Abort()
 		}()
-		c.Next()
 	}
 }
