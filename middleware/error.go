@@ -17,5 +17,6 @@ func RecoveryMiddleware() func(c *gin.Context) {
 			}
 			c.Abort()
 		}()
+		c.Next()
 	}
 }
