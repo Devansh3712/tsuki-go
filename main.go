@@ -102,7 +102,8 @@ func main() {
 		post.POST("/:id/comment", routes.Comment)
 	}
 
-	if err := app.Run(); err != nil {
+	port := os.Getenv("PORT")
+	if err := app.Run(":" + port); err != nil {
 		panic(err)
 	}
 }
