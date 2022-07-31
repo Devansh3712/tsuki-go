@@ -8,14 +8,14 @@ function loadUsers(str) {
         url: "/search",
         type: "POST",
         data: { search: str },
-        success: function (data) {
+        success: function(data) {
             if (!data) {
                 div.innerHTML = `
                 <p style="color: rgb(130, 130, 130)">No users found.</p>`;
                 return;
             }
             var content = "";
-            data.forEach(function (user) {
+            data.forEach(function(user) {
                 content += `
                 <span class="avatar-small">`;
                 if (user.Avatar) {
@@ -67,11 +67,7 @@ function toggleFollow(username) {
         url: `/search/${username}/toggle-follow`,
         type: "POST",
         success: function() {
-            if (follows.innerText == "Unfollow") {
-                follows.innerText = "Follow";
-            } else {
-                follows.innerText = "Unfollow";
-            }
+            follows.innerText = follows.innerText == "Unfollow" ? "Follow" : "Unfollow";
         }
     });
 }

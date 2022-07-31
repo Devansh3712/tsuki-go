@@ -89,11 +89,13 @@
   {{ end }}
 </div>
 {{ if eq (len .comments) 10 }}
-<h3 style="padding-top: 10px">
-  <a onclick="loadMoreComments('{{ .post.Id }}')">
-    <i class="fa-solid fa-circle-chevron-down"></i> More
-  </a>
-</h3>
+<div id="more">
+  <h3 style="padding-top: 10px">
+    <a onclick="loadMoreComments('{{ .post.Id }}')">
+      <i class="fa-solid fa-circle-chevron-down"></i> More
+    </a>
+  </h3>
+</div>
 {{ end }} {{ else }}
 <p style="color: rgb(130, 130, 130)">No comments found.</p>
 {{ end }} {{ template "bottom" . }}

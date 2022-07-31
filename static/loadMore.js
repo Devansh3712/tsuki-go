@@ -3,8 +3,12 @@ function loadMoreFeed() {
     $.ajax({
         url: "/feed/more",
         type: "GET",
-        success: function (data) {
-            data.forEach(function (post) {
+        success: function(data) {
+            if (!data) {
+                $("#more").remove()
+                return
+            }
+            data.forEach(function(post) {
                 content = `<span class="avatar-small">`;
                 if (post.Avatar) {
                     content += `<img src="${post.Avatar}" />`;
@@ -22,6 +26,9 @@ function loadMoreFeed() {
                 </a>`;
                 $("#posts").append(content);
             });
+            if (data.length < 10) {
+                $("#more").remove()
+            }
         },
     });
 }
@@ -31,8 +38,12 @@ function loadMoreComments(postId) {
     $.ajax({
         url: `/post/${postId}/comments`,
         type: "GET",
-        success: function (data) {
-            data.forEach(function (comment) {
+        success: function(data) {
+            if (!data) {
+                $("#more").remove()
+                return
+            }
+            data.forEach(function(comment) {
                 content = `
                 <p>${comment.Body}</p>
                 <p class="separator">
@@ -46,6 +57,9 @@ function loadMoreComments(postId) {
                 content += `</p>`;
                 $("#comments").append(content);
             });
+            if (data.length < 10) {
+                $("#more").remove()
+            }
         },
     });
 }
@@ -55,12 +69,12 @@ function loadMoreUsers() {
     $.ajax({
         url: "/search/more",
         type: "GET",
-        success: function (data) {
+        success: function(data) {
             if (!data) {
                 return
             }
             $("#more").remove()
-            data.forEach(function (user) {
+            data.forEach(function(user) {
                 content = `
                 <span class="avatar-small">`;
                 if (user.Avatar) {
@@ -94,11 +108,13 @@ function loadMoreUsers() {
             });
             if (data.length == 10) {
                 content = `
+                <div id="more">
                 <h3 style="padding-top: 10px">
-                <a id="more" onclick="loadMoreUsers()">
-                    <i id="more-icon" class="fa-solid fa-circle-chevron-down"></i> More
-                </a>
-                </h3>`;
+                    <a onclick="loadMoreUsers()">
+                    <i class="fa-solid fa-circle-chevron-down"></i> More
+                    </a>
+                </h3>
+                </div>`;
                 $("#users").append(content)
             }
         },
@@ -110,8 +126,12 @@ function loadMorePosts(username) {
     $.ajax({
         url: `/user/${username}/posts/more`,
         type: "GET",
-        success: function (data) {
-            data.forEach(function (post) {
+        success: function(data) {
+            if (!data) {
+                $("#more").remove()
+                return
+            }
+            data.forEach(function(post) {
                 content = `
                 <a href="/post/${post.Id}">
                     <p class="content">${post.Body}</p>
@@ -119,6 +139,9 @@ function loadMorePosts(username) {
                 </a>`
                 $("#posts").append(content);
             });
+            if (data.length < 10) {
+                $("#more").remove()
+            }
         },
     });
 }
