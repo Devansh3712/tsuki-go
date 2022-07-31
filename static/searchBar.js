@@ -31,12 +31,12 @@ function loadUsers(str) {
                 &nbsp; `;
                 if (user.Follows == true) {
                     content += `
-                    <button id="follows" onclick="toggleFollow('${user.Username}')">
+                    <button id="follows-${user.Username}" onclick="toggleFollow('${user.Username}')">
                         Unfollow
                     </button>`;
                 } else if (user.Follows == false) {
                     content += `
-                    <button id="follows" onclick="toggleFollow('${user.Username}')">
+                    <button id="follows-${user.Username}" onclick="toggleFollow('${user.Username}')">
                         Follow
                     </button>`;
                 }
@@ -62,7 +62,7 @@ function loadUsers(str) {
 }
 
 function toggleFollow(username) {
-    var follows = document.getElementById("follows");
+    var follows = document.getElementById(`follows-${username}`);
     $.ajax({
         url: `/search/${username}/toggle-follow`,
         type: "POST",
