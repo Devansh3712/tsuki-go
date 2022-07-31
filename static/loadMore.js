@@ -11,7 +11,8 @@ function loadMoreFeed() {
                 } else {
                     content += `<img src="/static/images/avatar.jpg" />`;
                 }
-                content += `</span>
+                content += `
+                </span>
                 <h3 style="display: inline-block">
                     <a href="/user/${post.Username}">@${post.Username}</a>
                 </h3>
@@ -32,11 +33,13 @@ function loadMoreComments(postId) {
         type: "GET",
         success: function (data) {
             data.forEach(function (comment) {
-                content = `<p>${comment.Body}</p>
-                    <p class="separator">
-                    <a href="/user/${comment.Username}">@${comment.Username}</a> &nbsp;`;
+                content = `
+                <p>${comment.Body}</p>
+                <p class="separator">
+                <a href="/user/${comment.Username}">@${comment.Username}</a> &nbsp;`;
                 if (comment.Self) {
-                    content += `<a href="/post/${postId}/comment/delete?commentId=${comment.Id}">
+                    content += `
+                    <a href="/post/${postId}/comment/delete?commentId=${comment.Id}">
                         <i class="fa-regular fa-trash-can"></i> Delete
                     </a>`;
                 }
@@ -53,36 +56,51 @@ function loadMoreUsers() {
         url: "/search/more",
         type: "GET",
         success: function (data) {
+            if (!data) {
+                return
+            }
+            $("#more").remove()
             data.forEach(function (user) {
-                content = `<form
-                name="follow"
-                action="/search/{{ .Username }}/toggle-follow"
-                method="POST"
-                enctype="multipart/form-data"
-                >
+                content = `
                 <span class="avatar-small">`;
                 if (user.Avatar) {
                     content += `<img src="${user.Avatar}" />`;
                 } else {
                     content += `<img src="/static/images/avatar.jpg" />`;
                 }
-                content += `</span>
+                content += `
+                </span>
                 <a href="/user/${user.Username}">
                     <h3 style="display: inline-block">@${user.Username}</h3>
                 </a>
                 &nbsp; `;
                 if (user.Follows == true) {
-                    content += `<button type="submit">Unfollow</button>`;
+                    content += `
+                    <button id="follows" onclick="toggleFollow('${user.Username}')">
+                        Unfollow
+                    </button>`;
                 } else if (user.Follows == false) {
-                    content += `<button type="submit">Follow</button>`;
+                    content += `
+                    <button id="follows" onclick="toggleFollow('${user.Username}')">
+                        Follow
+                    </button>`;
                 }
-                content += `</form>
+                content += `
                 <p class="separator">
                     ${user.Posts} posts &nbsp; ${user.Followers} followers &nbsp; ${user.Following}
                     following
                 </p>`;
                 $("#users").append(content);
             });
+            if (data.length == 10) {
+                content = `
+                <h3 style="padding-top: 10px">
+                <a id="more" onclick="loadMoreUsers()">
+                    <i id="more-icon" class="fa-solid fa-circle-chevron-down"></i> More
+                </a>
+                </h3>`;
+                $("#users").append(content)
+            }
         },
     });
 }
@@ -94,10 +112,12 @@ function loadMorePosts(username) {
         type: "GET",
         success: function (data) {
             data.forEach(function (post) {
-                $("#posts").append(`<a href="/post/${post.Id}">
+                content = `
+                <a href="/post/${post.Id}">
                     <p class="content">${post.Body}</p>
                     <p class="separator">${post.CreatedAt}</p>
-                </a>`);
+                </a>`
+                $("#posts").append(content);
             });
         },
     });

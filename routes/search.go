@@ -49,9 +49,7 @@ func SearchUser(c *gin.Context) {
 			}
 			users = append(users, user)
 		}
-		c.HTML(http.StatusOK, "search.tmpl.html", gin.H{
-			"users": users,
-		})
+		c.JSON(http.StatusOK, users)
 	}
 }
 
@@ -91,5 +89,4 @@ func ToggleSearchFollow(c *gin.Context) {
 	username := c.Param("username")
 	toFollow := database.ReadUserByName(username)
 	database.ToggleFollow(id.(string), toFollow.Id)
-	c.Redirect(http.StatusPermanentRedirect, "/search")
 }
