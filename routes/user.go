@@ -34,6 +34,7 @@ func GetUser(c *gin.Context) {
 		"followers": database.ReadFollowers(userId),
 		"following": database.ReadFollowing(userId),
 		"posts":     database.ReadPosts(userId, 5, 0),
+		"oauth":     database.IsOAuthUser(userId),
 	})
 }
 
@@ -281,16 +282,21 @@ func DeleteUser(c *gin.Context) {
 	}
 	switch c.Request.Method {
 	case "GET":
-		c.HTML(http.StatusOK, "delete.tmpl.html", nil)
+		c.HTML(http.StatusOK, "delete.tmpl.html", gin.H{
+			"oauth": database.IsOAuthUser(id.(string)),
+		})
 	case "POST":
-		password := c.PostForm("password")
 		user := database.ReadUserById(id.(string))
-		if !user.CheckPassword(password) {
-			c.HTML(http.StatusForbidden, "error.tmpl.html", gin.H{
-				"error":   "403 Forbidden",
-				"message": "Incorrect password.",
-			})
-			return
+		// Password required for users who didn't sign up through OAuth
+		if !database.IsOAuthUser(user.Id) {
+			password := c.PostForm("password")
+			if !user.CheckPassword(password) {
+				c.HTML(http.StatusForbidden, "error.tmpl.html", gin.H{
+					"error":   "403 Forbidden",
+					"message": "Incorrect password.",
+				})
+				return
+			}
 		}
 		if result := database.DeleteUser(user.Id); !result {
 			c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
@@ -301,7 +307,7 @@ func DeleteUser(c *gin.Context) {
 		}
 		session := sessions.Default(c)
 		session.Clear()
-		session.Options(sessions.Options{MaxAge: -1})
+		session.Options(sessions.Options{Path: "/", MaxAge: -1})
 		session.Save()
 		c.HTML(http.StatusOK, "response.tmpl.html", gin.H{
 			"message": "Account deleted succesfully. つき が つかって くれて ありがとう ございました。",

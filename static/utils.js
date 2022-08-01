@@ -4,14 +4,14 @@ var modal2 = document.getElementById("modal-2")
 var btn1 = document.getElementById("btn-1")
 var btn2 = document.getElementById("btn-2")
 
-var span = document.getElementsByClassName("close-1")[0]
+var span1 = document.getElementsByClassName("close-1")[0]
 var span2 = document.getElementsByClassName("close-2")[0]
 
 if (btn1 != null) {
     btn1.onclick = function() {
         modal1.style.display = "block";
     }
-    span.onclick = function() {
+    span1.onclick = function() {
         modal1.style.display = "none";
     }
 }

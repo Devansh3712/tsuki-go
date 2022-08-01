@@ -5,44 +5,79 @@
 <h2>Login</h2>
 <p>Login to your Tsuki account.</p>
 {{ end }}
-<form
-  name="{{ .type }}"
-  action="/auth/{{ .type }}"
-  method="POST"
-  enctype="multipart/form-data"
->
-  {{ if eq .type "signup" }}
-  <label for="email">Email</label>
-  <br />
-  <input name="email" type="email" required />
-  <br />
-  {{ end }}
-  <label for="username">Username</label>
-  <br />
-  <input
-    name="username"
-    type="text"
-    maxlength="32"
-    pattern="^[A-Za-z0-9._\\s]{1,32}$"
-    title="Username can only contain alphabets, digits, periods (.) and underscores (_)"
-    required
-  />
-  <br />
-  <label for="password">Password</label>
-  <br />
-  <input
-    name="password"
-    id="password"
-    type="password"
-    maxlength="32"
-    required
-  /><i
-    class="fa-solid fa-eye"
-    style="margin-left: 10px; cursor: pointer"
-    id="togglePassword"
-  ></i>
-  <br />
-  <br />
-  <button type="submit">{{ .type | formatAsTitle }}</button>
-</form>
+<div class="row">
+  <div class="column">
+    <form
+      name="{{ .type }}"
+      action="/auth/{{ .type }}"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      {{ if eq .type "signup" }}
+      <label for="email">Email</label>
+      <br />
+      <input name="email" type="email" required />
+      <br />
+      {{ end }}
+      <label for="username">Username</label>
+      <br />
+      <input
+        name="username"
+        type="text"
+        maxlength="32"
+        pattern="^[A-Za-z0-9._\\s]{1,32}$"
+        title="Username can only contain alphabets, digits, periods (.) and underscores (_)"
+        required
+      />
+      <br />
+      <label for="password">Password</label>
+      <br />
+      <input
+        name="password"
+        id="password"
+        type="password"
+        maxlength="32"
+        required
+      /><i
+        class="fa-solid fa-eye"
+        style="margin-left: 10px; cursor: pointer"
+        id="togglePassword"
+      ></i>
+      <br />
+      <br />
+      <button type="submit">{{ .type | formatAsTitle }}</button>
+    </form>
+  </div>
+  <div class="column">
+    <br />
+    <br />
+    {{ if eq .type "signup" }}
+    <a href="/auth/signup/discord">
+      <button class="social-auth">
+        <i class="fa-brands fa-discord"></i>&nbsp;Signup with Discord
+      </button>
+    </a>
+    <br />
+    <br />
+    <a href="/auth/signup/github">
+      <button class="social-auth">
+        <i class="fa-brands fa-github"></i>&nbsp;Signup with GitHub
+      </button>
+    </a>
+    {{ else }}
+    <a href="/auth/login/discord">
+      <button class="social-auth">
+        <i class="fa-brands fa-discord"></i>&nbsp;Login with Discord
+      </button>
+    </a>
+    <br />
+    <br />
+    <a href="/auth/login/github">
+      <button class="social-auth">
+        <i class="fa-brands fa-github"></i>&nbsp;Login with GitHub
+      </button>
+    </a>
+    {{ end }}
+  </div>
+</div>
 {{ template "bottom" . }}

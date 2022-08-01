@@ -208,6 +208,20 @@ u {
     margin-top: 15px;
 }
 
+.social-auth {
+    background-color: rgb(25, 25, 25);
+    border: none;
+    color: white;
+    padding: 5px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-family: inherit;
+    font-size: 20px;
+    width: 400px;
+    height: 40px;
+}
+
 .user-data {
     margin-top: -10px;
 }

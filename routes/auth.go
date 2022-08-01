@@ -55,9 +55,9 @@ func SignUp(c *gin.Context) {
 			})
 			return
 		}
+		user.CreatedAt = time.Now()
 		user.Id = uuid.NewString()
 		user.Verified = false
-		user.CreatedAt = time.Now()
 		user.HashPassword()
 		if res := database.CreateUser(&user); !res {
 			c.HTML(http.StatusForbidden, "error.tmpl.html", gin.H{

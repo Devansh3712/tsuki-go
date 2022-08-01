@@ -8,6 +8,14 @@ CREATE TABLE IF NOT EXISTS t_users (
     created_at  TIMESTAMPTZ     NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS o_users (
+    id          CHAR(36)        PRIMARY KEY,
+    CONSTRAINT fk_id
+        FOREIGN KEY(id)
+            REFERENCES t_users(id)
+            ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS shorturl (
     token       VARCHAR(320)    PRIMARY KEY,
     id          CHAR(36)        UNIQUE NOT NULL

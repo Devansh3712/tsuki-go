@@ -4,12 +4,14 @@
   Permanently delete your Tsuki account. On deleting your account, all related
   data will be lost.
 </p>
+
 <form
   name="delete"
   action="/user/settings/delete"
   method="POST"
   enctype="multipart/form-data"
 >
+  {{ if eq .oauth false }}
   <label for="password">Password</label>
   <br />
   <input
@@ -25,5 +27,8 @@
   ></i>
   <br />
   <button type="submit">Delete account</button>
+  {{ else }}
+  <button type="submit">Delete account</button>
+  {{ end }}
 </form>
 {{ template "bottom" . }}

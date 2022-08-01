@@ -1,2 +1,4 @@
 .env
 bin/
+.air.toml
+tmp

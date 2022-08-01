@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Devansh3712/tsuki-go/internal"
+	socials "github.com/Devansh3712/tsuki-go/internal/auth"
 	"github.com/Devansh3712/tsuki-go/middleware"
 	"github.com/Devansh3712/tsuki-go/routes"
 	"github.com/gin-contrib/sessions"
@@ -53,6 +54,12 @@ func main() {
 
 	auth := app.Group("/auth")
 	{
+		auth.GET("/signup/discord", socials.DiscordSignUp)
+		auth.GET("/signup/github", socials.GitHubSignUp)
+		auth.GET("/login/discord", socials.DiscordLogin)
+		auth.GET("/login/github", socials.GitHubLogin)
+		auth.GET("/discord", socials.DiscordAuth)
+		auth.GET("/github", socials.GitHubAuth)
 		auth.GET("/verify", middleware.AuthMiddleware(), routes.SendVerificationMail)
 		auth.GET("/verify/:id", routes.Verify)
 

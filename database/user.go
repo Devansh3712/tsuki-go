@@ -26,9 +26,34 @@ func CreateUser(user *models.User) bool {
 	return true
 }
 
+func CreateOAuthUser(id string) bool {
+	if _, err := db.Exec(`INSERT INTO o_users(id) VALUES ($1)`, id); err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
+
 func ReadUserByName(username string) *models.User {
 	var user models.User
 	if err := db.QueryRow(`SELECT * FROM t_users WHERE username = $1`, username).Scan(
+		&user.Email,
+		&user.Username,
+		&user.Password,
+		&user.Id,
+		&user.Verified,
+		&user.Avatar,
+		&user.CreatedAt,
+	); err != nil {
+		log.Println(err)
+		return nil
+	}
+	return &user
+}
+
+func ReadUserByEmail(email string) *models.User {
+	var user models.User
+	if err := db.QueryRow(`SELECT * FROM t_users WHERE email = $1`, email).Scan(
 		&user.Email,
 		&user.Username,
 		&user.Password,
@@ -58,6 +83,17 @@ func ReadUserById(id string) *models.User {
 		return nil
 	}
 	return &user
+}
+
+func IsOAuthUser(id string) bool {
+	var count int
+	db.QueryRow(`SELECT COUNT(*) FROM o_users WHERE id = $1`, id).Scan(&count)
+	switch count {
+	case 0:
+		return false
+	default:
+		return true
+	}
 }
 
 func ReadUsers(username string, limit int, offset int) []models.User {

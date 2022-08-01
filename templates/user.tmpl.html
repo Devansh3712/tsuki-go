@@ -72,9 +72,11 @@
     <p class="user-data">
       ➜ <a href="/user/settings/username">Update username</a>
     </p>
+    {{ if eq .oauth false }}
     <p class="user-data">
       ➜ <a href="/user/settings/password">Update password</a>
     </p>
+    {{ end }}
     <p class="user-data">
       ➜ <a href="/user/settings/delete">Delete account</a>
     </p>
