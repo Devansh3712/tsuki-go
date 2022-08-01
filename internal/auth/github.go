@@ -3,7 +3,6 @@ package auth
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -11,6 +10,7 @@ import (
 	"time"
 
 	"github.com/Devansh3712/tsuki-go/database"
+	"github.com/Devansh3712/tsuki-go/internal"
 	"github.com/Devansh3712/tsuki-go/middleware"
 	"github.com/Devansh3712/tsuki-go/models"
 	"github.com/gin-contrib/sessions"
@@ -18,8 +18,10 @@ import (
 	"github.com/google/uuid"
 )
 
+const GITHUB_URL = "https://github.com/login/oauth"
+
 func GitHubSignUp(c *gin.Context) {
-	api, _ := url.Parse(os.Getenv("GITHUB_URL") + "/authorize")
+	api, _ := url.Parse(GITHUB_URL + "/authorize")
 	params := url.Values{
 		"client_id":    []string{os.Getenv("GITHUB_CLIENT_ID")},
 		"redirect_uri": []string{"https://tsukigo.herokuapp.com/auth/github"},
@@ -30,7 +32,7 @@ func GitHubSignUp(c *gin.Context) {
 }
 
 func GitHubLogin(c *gin.Context) {
-	api, _ := url.Parse(os.Getenv("GITHUB_URL") + "/authorize")
+	api, _ := url.Parse(GITHUB_URL + "/authorize")
 	params := url.Values{
 		"client_id":    []string{os.Getenv("GITHUB_CLIENT_ID")},
 		"redirect_uri": []string{"https://tsukigo.herokuapp.com/auth/github?login=true"},
@@ -42,7 +44,6 @@ func GitHubLogin(c *gin.Context) {
 
 func GitHubAuth(c *gin.Context) {
 	// Retrieve user access token
-	api := os.Getenv("GITHUB_URL")
 	authCode := c.Query("code")
 	client := &http.Client{}
 	data := url.Values{
@@ -57,19 +58,25 @@ func GitHubAuth(c *gin.Context) {
 		data.Add("redirect_uri", "https://tsukigo.herokuapp.com/auth/github")
 	}
 	request, _ := http.NewRequest(
-		"POST", api+"/access_token", bytes.NewBuffer([]byte(data.Encode())),
+		"POST", GITHUB_URL+"/access_token", bytes.NewBuffer([]byte(data.Encode())),
 	)
 	request.Header.Set("Accept", "application/json")
 	response, err := client.Do(request)
 	if err != nil {
 		log.Println(err)
+		c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
+			"error":   "400 Bad Request",
+			"message": "Unable to retrieve access token, try again later.",
+		})
+		return
 	}
 	defer response.Body.Close()
 	var responseData map[string]interface{}
 	if err := json.NewDecoder(response.Body).Decode(&responseData); err != nil {
 		log.Println(err)
 		c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
-			"error": "400 Bad Request",
+			"error":   "400 Bad Request",
+			"message": "Unable to parse authentication response, try again later.",
 		})
 		return
 	}
@@ -81,7 +88,8 @@ func GitHubAuth(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
-			"error": "400 Bad Request",
+			"error":   "400 Bad Request",
+			"message": "Unable to make authorization request, try again later.",
 		})
 		return
 	}
@@ -90,7 +98,8 @@ func GitHubAuth(c *gin.Context) {
 	if err := json.NewDecoder(response.Body).Decode(&authUser); err != nil {
 		log.Println(err)
 		c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
-			"error": "400 Bad Request",
+			"error":   "400 Bad Request",
+			"message": "Unable to parse authorization response, try again later.",
 		})
 		return
 	}
@@ -102,7 +111,8 @@ func GitHubAuth(c *gin.Context) {
 		if err != nil {
 			log.Println(err)
 			c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
-				"error": "400 Bad Request",
+				"error":   "400 Bad Request",
+				"message": "Unable to make authorization request, try again later.",
 			})
 			return
 		}
@@ -111,7 +121,8 @@ func GitHubAuth(c *gin.Context) {
 		if err := json.NewDecoder(response.Body).Decode(&emails); err != nil {
 			log.Println(err)
 			c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
-				"error": "400 Bad Request",
+				"error":   "400 Bad Request",
+				"message": "Unable to parse authorization response, try again later.",
 			})
 			return
 		}
@@ -144,17 +155,12 @@ func GitHubAuth(c *gin.Context) {
 			return
 		}
 		var user models.User
+		user.Username = authUser.Username
 		// Update the username if it already exists in the database
-		if result := database.ReadUserByName(authUser.Username); result != nil {
-			user.Username = authUser.Username + fmt.Sprintf("%d", time.Now().Unix())
-			if len(user.Username) > 32 {
-				// If updated username is more than 32 characters, shorten it
-				user.Username = user.Username[:32]
-			}
-		} else {
-			user.Username = authUser.Username
+		if result := database.ReadUserByName(user.Username); result != nil {
+			user.Username += internal.RandomString(32 - len(authUser.Username))
 		}
-		authUser.CreatedAt = time.Now()
+		user.CreatedAt = time.Now()
 		user.Email = authUser.Email
 		user.Verified = authUser.Verified
 		user.Id = uuid.NewString()

@@ -56,10 +56,13 @@ func main() {
 	{
 		auth.GET("/signup/discord", socials.DiscordSignUp)
 		auth.GET("/signup/github", socials.GitHubSignUp)
+		auth.GET("/signup/google", socials.GoogleSignUp)
 		auth.GET("/login/discord", socials.DiscordLogin)
 		auth.GET("/login/github", socials.GitHubLogin)
+		auth.GET("/login/google", socials.GoogleLogin)
 		auth.GET("/discord", socials.DiscordAuth)
 		auth.GET("/github", socials.GitHubAuth)
+		auth.GET("/google", socials.GoogleAuth)
 		auth.GET("/verify", middleware.AuthMiddleware(), routes.SendVerificationMail)
 		auth.GET("/verify/:id", routes.Verify)
 

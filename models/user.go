@@ -19,22 +19,23 @@ type User struct {
 type DiscordUser struct {
 	Email     *string `json:"email"`
 	Username  string  `json:"username"`
-	Password  string
-	Id        string
 	Verified  bool
 	Avatar    *string `json:"avatar"`
-	CreatedAt time.Time
-	DiscordId string `json:"id"`
+	DiscordId string  `json:"id"`
 }
 
 type GitHubUser struct {
-	Email     *string `json:"email"`
-	Username  string  `json:"login"`
-	Password  string
-	Id        string `json:"-"`
-	Verified  bool
-	Avatar    *string `json:"avatar_url"`
-	CreatedAt time.Time
+	Email    *string `json:"email"`
+	Username string  `json:"login"`
+	Verified bool
+	Avatar   *string `json:"avatar_url"`
+}
+
+type GoogleUser struct {
+	Email    string  `json:"email"`
+	Username string  `json:"given_name"`
+	Avatar   *string `json:"picture"`
+	Verified bool    `json:"email_verified"`
 }
 
 type Login struct {

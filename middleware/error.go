@@ -8,6 +8,7 @@ import (
 
 func RecoveryMiddleware() func(c *gin.Context) {
 	return func(c *gin.Context) {
+		c.Next()
 		defer func() {
 			if err := recover(); err != nil {
 				c.HTML(http.StatusInternalServerError, "error.tmpl.html", gin.H{
@@ -17,6 +18,5 @@ func RecoveryMiddleware() func(c *gin.Context) {
 			}
 			c.Abort()
 		}()
-		c.Next()
 	}
 }

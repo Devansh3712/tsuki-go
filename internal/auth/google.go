@@ -1,11 +1,10 @@
 package auth
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"time"
 
@@ -16,83 +15,79 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/joho/godotenv"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
+var config *oauth2.Config
+var state string
+
 func init() {
-	godotenv.Load(".env")
+	state = os.Getenv("SECRET_KEY")
+	config = &oauth2.Config{
+		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+		Scopes: []string{
+			"https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
+		},
+		Endpoint: google.Endpoint,
+	}
 }
 
-func DiscordSignUp(c *gin.Context) {
-	c.Redirect(http.StatusFound, os.Getenv("DISCORD_SIGNUP_URL"))
+func GoogleSignUp(c *gin.Context) {
+	config.RedirectURL = "https://tsukigo.herokuapp.com/auth/google"
+	c.Redirect(http.StatusFound, config.AuthCodeURL(state))
 }
 
-func DiscordLogin(c *gin.Context) {
-	c.Redirect(http.StatusFound, os.Getenv("DISCORD_LOGIN_URL"))
+func GoogleLogin(c *gin.Context) {
+	config.RedirectURL = "https://tsukigo.herokuapp.com/auth/google?login=true"
+	c.Redirect(http.StatusFound, config.AuthCodeURL(state))
 }
 
-func DiscordAuth(c *gin.Context) {
-	// Retrieve user access token
-	api := "https://discord.com/api/v10"
-	authCode := c.Query("code")
-	data := url.Values{
-		"client_id":     []string{os.Getenv("DISCORD_CLIENT_ID")},
-		"client_secret": []string{os.Getenv("DISCORD_CLIENT_SECRET")},
-		"grant_type":    []string{"authorization_code"},
-		"code":          []string{authCode},
+func GoogleAuth(c *gin.Context) {
+	if c.Query("state") != state {
+		c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
+			"error":   "400 Bad Request",
+			"message": "Invalid authorization URL.",
+		})
+		return
 	}
 	switch c.Query("login") {
 	case "true":
-		data.Add("redirect_uri", "https://tsukigo.herokuapp.com/auth/discord?login=true")
+		config.RedirectURL = "https://tsukigo.herokuapp.com/auth/google?login=true"
 	default:
-		data.Add("redirect_uri", "https://tsukigo.herokuapp.com/auth/discord")
+		config.RedirectURL = "https://tsukigo.herokuapp.com/auth/google"
 	}
-	response, err := http.PostForm(api+"/oauth2/token", data)
+	token, err := config.Exchange(context.Background(), c.Query("code"))
+	if err != nil {
+		log.Println(err)
+		c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
+			"error": "400 Bad Request",
+		})
+		return
+	}
+	client := config.Client(context.Background(), token)
+	response, err := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
 	if err != nil {
 		log.Println(err)
 		c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
 			"error":   "400 Bad Request",
-			"message": "Unable to retrieve access token, try again later.",
+			"message": "Unable to retrieve authorization response, try again later.",
 		})
 		return
 	}
 	defer response.Body.Close()
-	var responseData map[string]interface{}
-	if err := json.NewDecoder(response.Body).Decode(&responseData); err != nil {
-		log.Println(err)
-		c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
-			"error":   "400 Bad Request",
-			"message": "Unable to parse authorization response, try again later.",
-		})
-		return
-	}
-	accessToken := responseData["access_token"].(string)
-	// Fetch user data
-	request, _ := http.NewRequest("GET", api+"/users/@me", nil)
-	request.Header.Add("Authorization", "Bearer "+accessToken)
-	client := &http.Client{}
-	response, err = client.Do(request)
-	if err != nil {
-		log.Println(err)
-		c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
-			"error":   "400 Bad Request",
-			"message": "Unable to make authorization request, try again later.",
-		})
-		return
-	}
-	defer response.Body.Close()
-	var authUser models.DiscordUser
+	var authUser models.GoogleUser
 	if err := json.NewDecoder(response.Body).Decode(&authUser); err != nil {
 		log.Println(err)
 		c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
 			"error":   "400 Bad Request",
-			"message": "Unable to parse authorization response, try again later.",
+			"message": "Unable to parse authentication response, try again later.",
 		})
 		return
 	}
 	// Signup or login user
-	exists := database.ReadUserByEmail(*authUser.Email)
-	log.Println(exists)
+	exists := database.ReadUserByEmail(authUser.Email)
 	switch c.Query("login") {
 	case "true":
 		if exists == nil {
@@ -122,15 +117,14 @@ func DiscordAuth(c *gin.Context) {
 			user.Username += internal.RandomString(32 - len(authUser.Username))
 		}
 		user.CreatedAt = time.Now()
-		user.Email = authUser.Email
+		user.Email = &authUser.Email
 		user.Verified = authUser.Verified
 		user.Id = uuid.NewString()
 		// Generate a random password for oauth user
 		user.Password = uuid.NewString()
 		user.HashPassword()
 		if authUser.Avatar != nil {
-			avatar := fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s", authUser.DiscordId, *authUser.Avatar)
-			user.Avatar = &avatar
+			user.Avatar = authUser.Avatar
 		}
 		if res := database.CreateUser(&user); !res {
 			c.HTML(http.StatusBadRequest, "error.tmpl.html", gin.H{
