@@ -42,9 +42,9 @@ func DiscordAuth(c *gin.Context) {
 	}
 	switch c.Query("login") {
 	case "true":
-		data.Add("redirect_uri", "http://localhost:8080/auth/discord?login=true")
+		data.Add("redirect_uri", "https://tsukigo.herokuapp.com/auth/discord?login=true")
 	default:
-		data.Add("redirect_uri", "http://localhost:8080/auth/discord")
+		data.Add("redirect_uri", "https://tsukigo.herokuapp.com/auth/discord")
 	}
 	response, err := http.PostForm(api+"/oauth2/token", data)
 	if err != nil {

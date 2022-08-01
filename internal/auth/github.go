@@ -22,7 +22,7 @@ func GitHubSignUp(c *gin.Context) {
 	api, _ := url.Parse(os.Getenv("GITHUB_URL") + "/authorize")
 	params := url.Values{
 		"client_id":    []string{os.Getenv("GITHUB_CLIENT_ID")},
-		"redirect_uri": []string{"http://localhost:8080/auth/github"},
+		"redirect_uri": []string{"https://tsukigo.herokuapp.com/auth/github"},
 	}
 	api.RawQuery = params.Encode()
 	api.RawQuery += "&scope=read:user,user:email"
@@ -33,7 +33,7 @@ func GitHubLogin(c *gin.Context) {
 	api, _ := url.Parse(os.Getenv("GITHUB_URL") + "/authorize")
 	params := url.Values{
 		"client_id":    []string{os.Getenv("GITHUB_CLIENT_ID")},
-		"redirect_uri": []string{"http://localhost:8080/auth/github?login=true"},
+		"redirect_uri": []string{"https://tsukigo.herokuapp.com/auth/github?login=true"},
 	}
 	api.RawQuery = params.Encode()
 	api.RawQuery += "&scope=read:user,user:email"
@@ -52,9 +52,9 @@ func GitHubAuth(c *gin.Context) {
 	}
 	switch c.Query("login") {
 	case "true":
-		data.Add("redirect_uri", "http://localhost:8080/auth/github?login=true")
+		data.Add("redirect_uri", "https://tsukigo.herokuapp.com/auth/github?login=true")
 	default:
-		data.Add("redirect_uri", "http://localhost:8080/auth/github")
+		data.Add("redirect_uri", "https://tsukigo.herokuapp.com/auth/github")
 	}
 	request, _ := http.NewRequest(
 		"POST", api+"/access_token", bytes.NewBuffer([]byte(data.Encode())),
